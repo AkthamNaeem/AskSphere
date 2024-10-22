@@ -176,4 +176,34 @@ class AnswerService
         return ['data' => $answer, 'message' => $message, 'code' => $code];
     }
 
+    public function best($request) {
+        $answer = Answer::query()->find($request['answer_id']);
+
+        if($answer) {
+            $question = Question::query()
+            ->where('user_id', '=', Auth::id())
+            ->whereNot('answered', '=', true)
+            ->find($answer['question_id']);
+            if($question) {
+                $answer->timestamps = false;
+                $answer->update([
+                    'best' => true
+                ]);
+                
+                $question->timestamps = false;
+                $question->update([
+                    'answered' => true
+                ]);
+            } else {
+                $code = 400;
+            $message = 'error';
+            }
+        } else {
+            $code = 400;
+            $message = 'error';
+        }
+
+        return ['data' => $answer, 'message' => $message, 'code' => $code];
+    }
+
 }

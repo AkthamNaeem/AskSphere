@@ -573,6 +573,31 @@
                     });
                 });
 
+                //best answer
+                $(document).on('click', '.dropdown-item-best-answer', function() {
+                    const answerId = $(this).data('id');
+                    $.ajax({
+                        url: "{{ route('answer.best') }}",
+                        type: 'POST',
+                        data: {
+                            answer_id: answerId,
+                            _token: '{{ csrf_token() }}'
+                        },
+
+                        success: function(response) {
+                            let answerId = response.data.id;
+                            let questionId = response.data.question_id;
+                            updateQuestionCard(questionId);
+                            $('#answer-card-' + answerId).replaceWith(defineAnswerHtml(response.data));
+                        },
+
+                        error: function(response) {
+                            console.log(response.errorMessage);
+                            alert('An error occurred.');
+                        }
+                    });
+                });
+
                 //show question answers
                 $(document).ready(function() {
                     $('#answersModal').on('show.bs.modal', function (e) {
@@ -667,7 +692,7 @@
                     </div>` : ``}
                 </div>
             </div>
-            ${question.answered ? `<span class="badge badge-info mb-3">Answered</span>` : ``}
+            ${question.answered ? `<span class="badge badge-info mt-0 mb-3">Answered</span>` : ``}
             <p class="card-text mb-3" style="font-size: 1.2rem; color: #343a40;">
                 ${question.content}
             </p>
@@ -716,11 +741,11 @@
         <div class="card-body p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="card-title mb-0 font-weight-bold text-primary" style="font-size: 1.1rem;">
-                    ${answer.user_name}
+                    ${answer.user_name} ${answer.created_at == answer.updated_at ? `` : `<small class="text-secondary" style="font-size: 0.85rem;"> edited</small>`}
                 </h6>
                 <div class="text-muted" style="font-size: 0.85rem;">
                     <i class="far fa-clock"></i> ${new Date(answer.created_at).toLocaleDateString()}
-                    ${answer.user_id == {{Auth::id()}} || answer.questioner_id == {{Auth::id()}} ? `
+                    ${answer.user_id == {{Auth::id()}} || (answer.questioner_id == {{Auth::id()}} && answer.question_answered != true) ? `
                     <div class="dropdown ms-2" style="display: inline-block">
                         <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"></button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
@@ -728,8 +753,8 @@
                             <li><button class="dropdown-item dropdown-item-edit-answer" id="answer-${answer.id}-edit" data-id="${answer.id}">Edit</button></li>
                             <li><button class="dropdown-item dropdown-item-delete-answer" id="answer-${answer.id}-delete" data-id="${answer.id}">Delete</button></li>
                             ` : ``}
-                            ${answer.questioner_id == {{Auth::id()}} && !answer.question_best ? `
-                            <li><button class="dropdown-item" id="answer-${answer.id}-best" data-id="${question.id}">Mark as the best</button></li>
+                            ${(answer.questioner_id == {{Auth::id()}} && answer.question_answered != true) ? `
+                            <li><button class="dropdown-item  dropdown-item-best-answer" id="answer-${answer.id}-best" data-id="${answer.id}">Mark as the best</button></li>
                             ` : ``}
                         </ul>
                     </div>` : ``}

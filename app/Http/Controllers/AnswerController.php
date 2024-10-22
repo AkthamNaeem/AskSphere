@@ -87,5 +87,16 @@ class AnswerController extends Controller
         }
     }
 
+    public function best(AnswersRequest $request) {
+        $data = [];
+        try {
+            $data = $this->answerService->best($request);
+            return response()->json(['data' => $data['data'], 'message' => $data['message']], $data['code']);
+        } catch (Throwable $throwable) {
+            $message = $throwable->getMessage();
+            return response()->json(['data' => $data, 'message' => $message, 500]);
+        }
+    }
+
 
 }
