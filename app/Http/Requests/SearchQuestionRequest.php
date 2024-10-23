@@ -25,7 +25,8 @@ class SearchQuestionRequest extends FormRequest
             'category_id' => ['required', 'exists:categories,id'],
             'filter_with' => ['required', 'in:all,answered,unanswered'],
             'order_by' => ['required', 'in:latest,popular,oldest'],
-            'search' => ['string']
+            'search' => ['string'],
+            'my' => ['nullable'],
         ];
     }
 }

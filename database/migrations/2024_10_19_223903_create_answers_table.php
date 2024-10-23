@@ -21,7 +21,7 @@ return new class extends Migration
                 ->constrained('questions')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('content');
+            $table->text('content');
             $table->boolean('best')->default(false);
             $table->timestamps();
         });

@@ -5,6 +5,28 @@
             .scrollable-btns::-webkit-scrollbar {
                 display: none;
             }
+            .page-btn {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                border: 1px solid #007bff;
+                background-color: #f8f9fa;
+                color: #007bff;
+                margin: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .page-btn:hover {
+                background-color: #007bff;
+                color: white;
+            }
+            .page-btn-active {
+                background-color: #007bff;
+                color: white;
+            }
         </style>
     @endsection
 
@@ -14,7 +36,7 @@
                 {{ session('status') }}
             </div>
         @endif
-
+        
         <!-- page content -->
         <main class="py-4">
             <!-- page header -->
@@ -27,45 +49,18 @@
                 </div>
             </section>
 
-            <!-- New question modal -->
-            <div class="modal fade" id="newQuestionModal" tabindex="-1" aria-labelledby="newQuestionModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content" style="border-radius: 10px; padding: 20px;">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="newQuestionModalLabel" style="font-size: 1.5rem; font-weight: bold;">Create New Question</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="category" class="form-label">Select Category</label>
-                                <select class="form-select" id="category" style="font-size: 1.1rem;">
-                                    <option value="" disabled selected>Select a category</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{$category['id']}}">{{$category['name']}}</option>
-                                    @endforeach
-                                </select>
-                                <small class="error-message" id="new-question-category-error-message" style="color: red; display: none; font-size: 12px; margin-top: 5px;">Please select a category.</small>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="question" class="form-label">Your Question</label>
-                                <textarea class="form-control" id="question" rows="5" placeholder="Write your question here..." style="font-size: 1.1rem; border-radius: 8px;"></textarea>
-                                <small class="error-message" id="edit-question-content-error-message" style="color: red; display: none; font-size: 12px; margin-top: 5px;">Please write your question.</small>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="font-size: 1.1rem; padding: 10px 20px;">Close</button>
-                            <button type="button" class="btn btn-primary" id="createQuestionBtn" style="font-size: 1.1rem; padding: 10px 20px;">Create</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- categories list -->
             <section class="pt-0 pb-0 p-3">
                 <!-- list title -->
-                <div class="col-md-12 mt-3">
-                    <h2>categories</h2>
+                <div class="col-md-12 mt-3 d-flex justify-content-between align-items-center">
+                    <h4>Categories</h4>
+                    <div class="form-check form-switch m-3 mt-0 mb-0">
+                        <input class="form-check-input" type="checkbox" id="show-my-questions">
+                        <label class="form-check-label" for="show-my-questions">
+                            My Questions
+                        </label>
+                    </div>
+
                 </div>
                 <!-- list items -->
                 <div class="col-md-12">
@@ -116,9 +111,52 @@
             </section>
 
             <!-- Questions List -->
-            <section class="pt-0 pb-0 p-1" id="questions-list">
-                <!-- Questions space -->
+            <section>
+            <div class="buttons-list d-flex justify-content-center mt-4">
+                    
+                    </div>
+                <div id="questions-list" class="pt-0 pb-0 p-1">
+                
+                </div> 
+
+                <div id="buttons-list-bottom" class="buttons-list d-flex justify-content-center mt-4">
+                    
+                </div>
             </section>
+
+            <!-- New question modal -->
+            <div class="modal fade" id="newQuestionModal" tabindex="-1" aria-labelledby="newQuestionModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content" style="border-radius: 10px; padding: 20px;">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="newQuestionModalLabel" style="font-size: 1.5rem; font-weight: bold;">Create New Question</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Select Category</label>
+                                <select class="form-select" id="category" style="font-size: 1.1rem;">
+                                    <option value="" disabled selected>Select a category</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{$category['id']}}">{{$category['name']}}</option>
+                                    @endforeach
+                                </select>
+                                <small class="error-message" id="new-question-category-error-message" style="color: red; display: none; font-size: 12px; margin-top: 5px;">Please select a category.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="question" class="form-label">Your Question</label>
+                                <textarea class="form-control" id="question" rows="5" placeholder="Write your question here..." style="font-size: 1.1rem; border-radius: 8px;"></textarea>
+                                <small class="error-message" id="edit-question-content-error-message" style="color: red; display: none; font-size: 12px; margin-top: 5px;">Please write your question.</small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="font-size: 1.1rem; padding: 10px 20px;">Close</button>
+                            <button type="button" class="btn btn-primary" id="createQuestionBtn" style="font-size: 1.1rem; padding: 10px 20px;">Create</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Answers Modal -->
             <div class="modal fade" id="answersModal" tabindex="-1" aria-labelledby="answersModalLabel" aria-hidden="true">
@@ -224,16 +262,17 @@
                 let selectedFilter = 'all';
                 let selectedOrder = 'latest';
                 let search = null;
+                let myQuestions = false;
 
                 //bring questions when loading the page for the first time
-                fetchQuestions();
+                fetchQuestions(1);
 
                 //bring questions according to the specified category
                 $(document).on('click', '.category-btn', function() {
                     $('.category-btn').removeClass('active');
                     $(this).addClass('active');
                     selectedCategory = $(this).data('id');
-                    fetchQuestions();
+                    fetchQuestions(1);
                 });
 
                 //sort questions by selected option
@@ -241,7 +280,7 @@
                     $('.order-btn').removeClass('active');
                     $(this).addClass('active');
                     selectedOrder = $(this).text().toLowerCase();
-                    fetchQuestions();
+                    fetchQuestions(1);
                 });
 
                 //filter questions according to the selected option
@@ -249,13 +288,25 @@
                     $('.filter-btn').removeClass('active');
                     $(this).addClass('active');
                     selectedFilter = $(this).text().toLowerCase();
-                    fetchQuestions();
+                    fetchQuestions(1);
                 });
 
                 //bring questions that match the search
                 $('#search').on('input', function() {
                     search = $(this).val();
-                    fetchQuestions();
+                    fetchQuestions(1);
+                });
+
+                //bring my questions
+                document.getElementById('show-my-questions').addEventListener('change', function() {
+                    const showMyQuestions = this.checked;
+                    if (showMyQuestions) {
+                        myQuestions = true;
+                        fetchQuestions(1);
+                    } else {
+                        myQuestions = false;
+                        fetchQuestions(1);
+                    }
                 });
 
                 //update question information
@@ -387,56 +438,58 @@
                 });
 
                 //show the question addition form and process the addition process
-                document.getElementById('newQuestionModal').addEventListener('click', function() {
-                    $(document).on('click', '#createQuestionBtn', function() {
-                        let categoryId = document.getElementById('category').value;
-                        let questionContent = document.getElementById('question').value;
-                        if (categoryId && questionContent) {
-                            let dataToSend = {
-                                category_id: categoryId,
-                                content: questionContent,
-                                _token: '{{ csrf_token() }}'
-                            };
+                $(document).on('click', '#createQuestionBtn', function() {
+                    let categoryId = document.getElementById('category').value;
+                    let questionContent = document.getElementById('question').value;
+                    if (categoryId && questionContent) {
+                        let dataToSend = {
+                            category_id: categoryId,
+                            content: questionContent,
+                            _token: '{{ csrf_token() }}'
+                        };
 
-                            $.ajax({
-                                url: "{{ route('question.create') }}",
-                                type: 'POST',
-                                data: dataToSend,
-                                success: function() {
-                                    $('#newQuestionModal').modal('hide');
-                                    document.getElementById('category').value = '';
-                                    document.getElementById('question').value = '';
-                                    selectedCategory = categoryId;
-                                    selectedOrder = 'latest';
-                                    let categoryBtnId = '#category-btn-' + categoryId;
-                                    fetchQuestions();
-                                    $('.category-btn').removeClass('active');
-                                    $('.order-btn').removeClass('active');
-                                    $('.order-latest').addClass('active');
-                                    $(categoryBtnId).addClass('active');
-                                    let container = document.querySelector('.scrollable-btns');
-                                    let target = document.getElementById(`category-btn-${categoryId}`);
-                                    let offset = target.offsetLeft - container.offsetWidth + target.offsetWidth
-                                    container.scrollLeft = offset;
-                                },
-                                error: function() {
-                                }
-                            });
-                        } else {
-                            if (!categoryId) {
-                                $('#new-question-category-error-message').fadeIn();
-                                setTimeout(function() {
-                                    $('#new-question-category-error-message').fadeOut();
-                                }, 5000);
+                        $.ajax({
+                            url: "{{ route('question.create') }}",
+                            type: 'POST',
+                            data: dataToSend,
+                            success: function() {
+                                $('#newQuestionModal').modal('hide');
+                                document.getElementById('category').value = '';
+                                document.getElementById('question').value = '';
+                                selectedCategory = categoryId;
+                                selectedOrder = 'latest';
+                                let categoryBtnId = '#category-btn-' + categoryId;
+                                fetchQuestions(1);
+                                $('.category-btn').removeClass('active');
+                                $('.order-btn').removeClass('active');
+                                $('.order-latest').addClass('active');
+                                $(categoryBtnId).addClass('active');
+                                let container = document.querySelector('.scrollable-btns');
+                                let target = document.getElementById(`category-btn-${categoryId}`);
+                                let offset = target.offsetLeft - container.offsetWidth + target.offsetWidth
+                                container.scrollTo({
+                                    left: offset,
+                                    behavior: 'smooth'
+                                });
+                            },
+                            error: function() {
                             }
-                            if (!questionContent) {
-                                $('#edit-question-content-error-message').fadeIn();
-                                setTimeout(function() {
-                                    $('#edit-question-content-error-message').fadeOut();
-                                }, 5000);
-                            }
-                    }});
-                });
+                        });
+                    } else {
+                        if (!categoryId) {
+                            $('#new-question-category-error-message').fadeIn();
+                            setTimeout(function() {
+                                $('#new-question-category-error-message').fadeOut();
+                            }, 5000);
+                        }
+                        if (!questionContent) {
+                            $('#edit-question-content-error-message').fadeIn();
+                            setTimeout(function() {
+                                $('#edit-question-content-error-message').fadeOut();
+                            }, 5000);
+                        }
+                }});
+                
 
                 //edit question
                 $(document).on('click', '.dropdown-item-edit', function() {
@@ -630,8 +683,19 @@
                     });
                 });
 
+
+                //bage button
+                $(document).on('click', '.page-btn', function() {
+                    let page = $(this).data('page');
+                    fetchQuestions(page);
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
                 //bring questions according to the specified data
-                function fetchQuestions() {
+                function fetchQuestions(page) {
                     let dataToSend = {
                         category_id: selectedCategory,
                         filter_with: selectedFilter,
@@ -643,12 +707,28 @@
                         dataToSend.search = search;
                     }
 
+                    if (myQuestions){
+                        dataToSend.my = true;
+                    }
+
                     $.ajax({
-                        url: "{{ route('questions.get') }}",
+                        url: '/questions/index?page=' + page,
                         type: 'POST',
-                        data: dataToSend,
+                        data: dataToSend,           
+                        beforeSend: function() {
+                            $('#load-more').text('Loading...');
+                        },
                         success: function(response) {
-                            renderQuestions(response.data);
+                            if(response.data.last_page > 1) {
+                                pageButtonsHtml = definePageButtons(response.data.last_page,response.data.current_page);
+                                $('.buttons-list').html(pageButtonsHtml);
+                                $('.page-btn').removeClass('page-btn-active');
+                                let pageClass = '.page' + response.data.current_page;
+                                $(pageClass).addClass('page-btn-active');
+                            } else {
+                                $('.buttons-list').html('');
+                            }
+                            renderQuestions(response.data.data);
                         },
                         error: function() {
                             $('#questions-list').html('<p class="text-center text-danger">An error occurred while fetching questions.</p>');
@@ -668,13 +748,48 @@
                 }
             });
 
+
+            function definePageButtons(last_page, current_page) {
+                let paginationHtml = ``;
+
+                if(current_page > 1) {
+                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page-1}"><<</button>`;
+                } else {
+                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page-1}" style="visibility: hidden;"><<</button>`;
+                }
+                if(last_page<=5) {
+                    for (let i = 1; i <= last_page; i++) {
+                        paginationHtml += `<button class="page-btn page${i}" data-page="${i}">${i}</button>`;
+                    }
+                } else {
+                    let first_page = current_page - 2;
+                    if(first_page < 1) {
+                        first_page = 1;
+                    }
+                    if ((last_page - first_page) < 5) {
+                        first_page = last_page - 4;
+                    }
+                    paginationHtml += `<button class="page-btn page-btn-active page${first_page}" data-page="${first_page}">${first_page}</button>`;
+                    for (let i = (first_page+1); i < (first_page + 5); i++) {
+                        paginationHtml += `<button class="page-btn page${i}" data-page="${i}">${i}</button>`;
+                    }
+                }
+                if(current_page < last_page) {
+                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page+1}">>></button>`;
+                } else {
+                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page+1}" style="visibility: hidden;">>></button>`;
+                }
+
+                return paginationHtml;
+            }
+
             function defineQuestionHtml(question) {
                 return `
 <div id="question-card-${question.id}" class="col-md-12 mt-3">
     <div class="card p-0 pt-3 m-0 mb-2 shadow-sm">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="card-title mb-0 text-primary font-weight-bold" style="font-size: 1.1rem;">
+                <h6 class="card-title mb-0 text-dark font-weight-bold" style="font-size: 1.1rem;">
                     ${question.user_name} ${question.created_at == question.updated_at ? `` : `<small class="text-secondary" style="font-size: 0.85rem;"> edited</small>`}
                 </h6>
                 <div class="text-muted" style="font-size: 0.85rem;">
@@ -689,17 +804,17 @@
                     </div>` : ``}
                 </div>
             </div>
-            
-            <p class="card-text mb-3" style="font-size: 1.2rem; color: #343a40;">
-            ${question.answered ? `<p class="p-2 pt-0 pb-0" style="display: inline-block; background-color: dodgerblue; color: aliceblue; border-radius: 10px;">Answered</p>` : ``}
+
+            ${question.answered ? `<p class="p-2 pt-0 pb-0 m-0" style="font-size: 1.0rem; display: inline-block; background-color: dodgerblue; color: aliceblue; border-radius: 10px;">Answered</p>` : ``}
+            <p class="card-text mb-3" dir="auto" style="font-size: 1.2rem; color: #343a40; display: inline-block; white-space: pre-line; width: 100%;">
                 ${question.content}
             </p>
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
-                    ${question.my_like != null ? `<button class="btn btn-success me-2 like-btn active" data-id="${question.id}">Liked</button>` : `<button class="btn btn-outline-success me-2 like-btn" data-id="${question.id}">Like</button>`}
+                    ${question.my_like != null ? `<button class="btn btn-primary me-2 like-btn" data-id="${question.id}">Liked</button>` : `<button class="btn btn-outline-primary me-2 like-btn" data-id="${question.id}">Like</button>`}
                 </div>
                 <div>
-                    <button type="button" class="btn btn-light likes-btn" disabled>${question.likes_count} Likes</button>
+                    <button type="button"class="btn btn-light likes-btn" disabled>${question.likes_count} Likes</button>
                     ${question.answers_count > 0 ? `<button type="button" class="btn btn-light answers-btn" data-question-id="${question.id}" data-bs-toggle="modal" data-bs-target="#answersModal">${question.answers_count} Answers</button>` : `<button type="button" class="btn btn-light answers-btn" disabled>${question.answers_count} Answers</button>`}
                 </div>
             </div>
@@ -708,7 +823,7 @@
         <div class="card-footer">
             <div class="mb-2">
                 <div class="input-group" style="height: 40px">
-                    <input type="text" class="form-control answer-input" id="question-${question.id}-answer" placeholder="Answer the question..." style="border-radius: 20px 0 0 20px;">
+                    <input type="text" dir="auto" class="form-control answer-input" id="question-${question.id}-answer" placeholder="Answer the question..." style="border-radius: 20px 0 0 20px; resize:none; overflow-y: none;"></> 
                     <button class="btn btn-primary answer-btn" data-id="${question.id}" style="border-radius: 0 20px 20px 0;">Answer</button>
                 </div>
                 <small class="error-message" id="question-${question.id}-answer-error-message" style="color: red; display: none; font-size: 12px; margin-top: 5px;">Please write an answer before submitting.</small>
@@ -758,8 +873,8 @@
                     </div>` : ``}
                 </div>
             </div>
-            <p class="card-text mb-3" style="font-size: 1.1rem; color: #343a40;">
-                ${answer.best ? `<p class="p-2 pt-0 pb-0" style="display: inline-block; background-color: green; color: aliceblue; border-radius: 10px;">Best Answer</p>` : ``}
+            ${answer.best ? `<p class="p-2 pt-0 pb-0" style="font-size: 1.0rem; display: inline-block; background-color: green; color: aliceblue; border-radius: 10px;">Best Answer</p>` : ``}
+            <p class="card-text mb-3" dir="auto" style="font-size: 1.1rem; color: #343a40; white-space: pre-line; width: 100%;">
                 ${answer.content}
             </p>
             <div class="d-flex justify-content-between align-items-center mb-2">

@@ -12,12 +12,6 @@ class UsersSeeders extends Seeder
      */
     public function run(): void
     {
-        for($i=0; $i<25; $i++) {
-            User::query()->create([
-                'name' => fake()->name,
-                'email' => fake()->email,
-                'password' => bcrypt('12345678'),
-            ]);
-        }
+        User::factory()->count(120)->create();
     }
 }
