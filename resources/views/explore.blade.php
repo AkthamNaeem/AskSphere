@@ -5,28 +5,7 @@
             .scrollable-btns::-webkit-scrollbar {
                 display: none;
             }
-            .page-btn {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                border: 1px solid #007bff;
-                background-color: #f8f9fa;
-                color: #007bff;
-                margin: 5px;
-                cursor: pointer;
-                font-size: 16px;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-            }
-            .page-btn:hover {
-                background-color: #007bff;
-                color: white;
-            }
-            .page-btn-active {
-                background-color: #007bff;
-                color: white;
-            }
+            
         </style>
     @endsection
 
@@ -722,9 +701,9 @@
                             if(response.data.last_page > 1) {
                                 pageButtonsHtml = definePageButtons(response.data.last_page,response.data.current_page);
                                 $('.buttons-list').html(pageButtonsHtml);
-                                $('.page-btn').removeClass('page-btn-active');
+                                $('.page-btn').removeClass('active');
                                 let pageClass = '.page' + response.data.current_page;
-                                $(pageClass).addClass('page-btn-active');
+                                $(pageClass).addClass('active');
                             } else {
                                 $('.buttons-list').html('');
                             }
@@ -753,13 +732,13 @@
                 let paginationHtml = ``;
 
                 if(current_page > 1) {
-                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page-1}"><<</button>`;
+                    paginationHtml += `<button class="btn btn-light page-btn page${current_page-1} ms-2" data-page="${current_page-1}"><<</button>`;
                 } else {
-                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page-1}" style="visibility: hidden;"><<</button>`;
+                    paginationHtml += `<button class="btn btn-light page-btn page${current_page-1} ms-2" data-page="${current_page-1}" style="visibility: hidden;"><<</button>`;
                 }
                 if(last_page<=5) {
                     for (let i = 1; i <= last_page; i++) {
-                        paginationHtml += `<button class="page-btn page${i}" data-page="${i}">${i}</button>`;
+                        paginationHtml += `<button class="btn btn-light page-btn page${i} ms-2" data-page="${i}">${i}</button>`;
                     }
                 } else {
                     let first_page = current_page - 2;
@@ -769,15 +748,15 @@
                     if ((last_page - first_page) < 5) {
                         first_page = last_page - 4;
                     }
-                    paginationHtml += `<button class="page-btn page-btn-active page${first_page}" data-page="${first_page}">${first_page}</button>`;
+                    paginationHtml += `<button class="btn btn-light page-btn page${first_page} ms-2"  data-page="${first_page}">${first_page}</button>`;
                     for (let i = (first_page+1); i < (first_page + 5); i++) {
-                        paginationHtml += `<button class="page-btn page${i}" data-page="${i}">${i}</button>`;
+                        paginationHtml += `<button class="btn btn-light page-btn page${i} ms-2" data-page="${i}">${i}</button>`;
                     }
                 }
                 if(current_page < last_page) {
-                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page+1}">>></button>`;
+                    paginationHtml += `<button class="btn btn-light page-btn page${current_page-1} ms-2" data-page="${current_page+1}">>></button>`;
                 } else {
-                    paginationHtml += `<button class="page-btn page${current_page-1}" data-page="${current_page+1}" style="visibility: hidden;">>></button>`;
+                    paginationHtml += `<button class="btn btn-light page-btn page${current_page-1} ms-2" data-page="${current_page+1}" style="visibility: hidden;">>></button>`;
                 }
 
                 return paginationHtml;
@@ -789,9 +768,14 @@
     <div class="card p-0 pt-3 m-0 mb-2 shadow-sm">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="card-title mb-0 text-dark font-weight-bold" style="font-size: 1.1rem;">
-                    ${question.user_name} ${question.created_at == question.updated_at ? `` : `<small class="text-secondary" style="font-size: 0.85rem;"> edited</small>`}
-                </h6>
+                <div class="d-flex align-items-center">
+                    <h6 class="card-title mb-0 text-dark font-weight-bold" style="font-size: 1.1rem;">
+                        ${question.user_name} 
+                    </h6>
+                    ${question.answered ? 
+                    `<span class="badge bg-success p-2 pt-1 pb-1 m-0 ms-2" style="font-size: 0.85rem; padding: 0.35em 0.6em; border-radius: 12px;">Answered</span>` : ``}
+                    ${question.created_at == question.updated_at ? `` : `<small class="text-secondary  ms-2" style="font-size: 0.85rem;">edited</small>`}
+                </div>
                 <div class="text-muted" style="font-size: 0.85rem;">
                     <i class="far fa-clock"></i> ${new Date(question.created_at).toLocaleDateString()}
                     ${question.user_id == {{Auth::id()}} ? `
@@ -804,9 +788,7 @@
                     </div>` : ``}
                 </div>
             </div>
-
-            ${question.answered ? `<p class="p-2 pt-0 pb-0 m-0" style="font-size: 1.0rem; display: inline-block; background-color: dodgerblue; color: aliceblue; border-radius: 10px;">Answered</p>` : ``}
-            <p class="card-text mb-3" dir="auto" style="font-size: 1.2rem; color: #343a40; display: inline-block; white-space: pre-line; width: 100%;">
+            <p class="card-text mb-3 mt-0" dir="auto" style="font-size: 1.2rem; color: #343a40; display: inline-block; white-space: pre-line; width: 100%;">
                 ${question.content}
             </p>
             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -853,9 +835,14 @@
     <div class="card shadow-sm p-3">
         <div class="card-body p-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="card-title mb-0 font-weight-bold text-primary" style="font-size: 1.1rem;">
-                    ${answer.user_name} ${answer.created_at == answer.updated_at ? `` : `<small class="text-secondary" style="font-size: 0.85rem;"> edited</small>`}
-                </h6>
+                <div class="d-flex align-items-center">
+                    <h6 class="card-title mb-0 text-dark font-weight-bold" style="font-size: 1.1rem;">
+                        ${answer.user_name} 
+                    </h6>
+                    ${answer.best ? 
+                    `<span class="badge bg-success p-2 pt-1 pb-1 m-0 ms-2" style="font-size: 0.85rem; padding: 0.35em 0.6em; border-radius: 12px;">Best Answer</span>` : ``}
+                    ${answer.created_at == answer.updated_at ? `` : `<small class="text-secondary  ms-2" style="font-size: 0.85rem;">edited</small>`}
+                </div>
                 <div class="text-muted" style="font-size: 0.85rem;">
                     <i class="far fa-clock"></i> ${new Date(answer.created_at).toLocaleDateString()}
                     ${answer.user_id == {{Auth::id()}} || (answer.questioner_id == {{Auth::id()}} && answer.question_answered != true) ? `
@@ -873,7 +860,6 @@
                     </div>` : ``}
                 </div>
             </div>
-            ${answer.best ? `<p class="p-2 pt-0 pb-0" style="font-size: 1.0rem; display: inline-block; background-color: green; color: aliceblue; border-radius: 10px;">Best Answer</p>` : ``}
             <p class="card-text mb-3" dir="auto" style="font-size: 1.1rem; color: #343a40; white-space: pre-line; width: 100%;">
                 ${answer.content}
             </p>
