@@ -43,4 +43,5 @@ Route::controller(AnswerController::class)->group(function()
     Route::post('/answer/show', 'show')->name('answer.show');
     Route::post('/answer/edit', 'edit')->name('answer.edit');
     Route::post('/answer/delete', 'delete')->name('answer.delete');
+    Route::post('/answer/best', 'best')->name('answer.best');
 })->middleware('auth');

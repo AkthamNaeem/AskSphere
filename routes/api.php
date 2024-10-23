@@ -12,5 +12,5 @@ Route::controller(QuestionController::class)->group(function()
 
 Route::controller(AnswerController::class)->group(function()
 {
-    Route::post('/answer/index', 'index');
+    Route::post('/answer/best', 'best');
 });
