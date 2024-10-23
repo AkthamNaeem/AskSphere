@@ -21,9 +21,10 @@ return new class extends Migration
                 ->constrained('categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('content');
+            $table->text('content');
             $table->boolean('answered')->default(false);
             $table->timestamps();
+            $table->fullText(['content']);
         });
     }
 

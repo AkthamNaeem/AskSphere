@@ -6,6 +6,7 @@ use App\Http\Requests\AnswersRequest;
 use App\Http\Requests\CreateAnswerRequest;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\EditAnswerRequest;
+use App\Http\Requests\QuestionRequest;
 use App\Http\Requests\ShowAnswersRequest;
 use App\Models\Like;
 use App\Services\AnswerService;
@@ -32,7 +33,7 @@ class AnswerController extends Controller
         }
     }
 
-    public function index(ShowAnswersRequest $request) {
+    public function index(QuestionRequest $request) {
         $data = [];
         try {
             $data = $this->answerService->index($request);

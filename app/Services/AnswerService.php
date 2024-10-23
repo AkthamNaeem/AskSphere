@@ -65,15 +65,10 @@ class AnswerService
                 'questioner_id',
                 'question_answered',
                 'user_name',
-            );
-
-        $answers = match ($request['order_by']) {
-            'popular' => $answers->orderBy('best', 'desc')->orderBy('likes_count', 'desc'),
-            'latest' => $answers->orderBy('best', 'desc')->orderBy('answers.created_at', 'desc'),
-            'oldest' => $answers->orderBy('best', 'desc')->orderBy('answers.created_at'),
-        };
-
-        $answers = $answers->get();
+            )
+            ->orderBy('best', 'desc')->orderBy('answers.created_at', 'desc')
+            ->get();
+            
         $message = 'success';
         $code = 200;
         return ['data' => $answers, 'message' => $message, 'code' => $code];
@@ -165,6 +160,13 @@ class AnswerService
         $answer = Answer::query()->where('user_id', '=', Auth::id())->find($request['answer_id']);
 
         if($answer) {
+            if($answer->best) {
+                $question = Question::query()->find($answer['question_id']);
+                $question->timestamps = false;
+                $question->update([
+                    'answered' => false
+                ]);
+            }
             $answer->delete();
             $code = 200;
             $message = 'success';

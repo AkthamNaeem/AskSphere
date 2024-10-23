@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Answer;
 use App\Models\Like;
 use App\Models\Question;
 use Illuminate\Support\Facades\Auth;
@@ -12,20 +13,12 @@ class QuestionService
 {
     public function index($request) {
         $questions = Question::query()->select(
-            'questions.id',
-            'questions.user_id',
-            'questions.category_id',
-            'questions.content',
-            'questions.answered',
-            'questions.created_at',
-            'questions.updated_at',
+            'questions.*',
             'users.name as user_name',
-            'categories.name as category_name',
             'my_likes.id as my_like',
             DB::raw('COUNT(DISTINCT likes.id) as likes_count'),
             DB::raw('COUNT(DISTINCT answers.id) as answers_count'))
             ->join('users', 'users.id', '=', 'questions.user_id')
-            ->join('categories', 'categories.id', '=', 'questions.category_id')
             ->leftJoin('likes', function ($join) {
                 $join->on('likes.likeable_id', '=', 'questions.id')
                     ->where('likes.likeable_type', '=', 'question');
@@ -36,17 +29,21 @@ class QuestionService
                     ->where('my_likes.likeable_type', '=', 'question')
                     ->where('my_likes.user_id', '=', Auth::id());
             })
-            ->where('category_id', '=', $request['category_id']);
-
-
-
-        $questions = match ($request['filter_with']) {
-            'all' => $questions,
-            'answered' => $questions->where('questions.answered', '=', true),
-            'unanswered' =>  $questions->where('questions.answered', '=', false),
-        };
-
-        $questions->groupBy(
+            ->when($request['my'], function ($query) {
+                $query->where('questions.user_id', '=', Auth::id());
+            })
+            ->when($request['search'], function ($query) use ($request) {
+                $query->whereFullText('questions.content', $request['search']);
+            })
+            ->when($request['filter_with'], function ($query) use ($request) {
+                $query = match ($request['filter_with']) {
+                    'all' => $query,
+                    'answered' => $query->where('questions.answered', '=', true),
+                    'unanswered' =>  $query->where('questions.answered', '=', false),
+                };
+            })
+            ->where('category_id', '=', $request['category_id'])
+            ->groupBy(
             'questions.id',
             'questions.user_id',
             'questions.category_id',
@@ -55,33 +52,20 @@ class QuestionService
             'questions.created_at',
             'questions.updated_at',
             'user_name',
-            'category_name',
-            'my_like');
-
-        $questions = match ($request['order_by']) {
-            'popular' => $questions->orderBy('likes_count', 'desc')->orderBy('answers_count','desc')->orderBy('questions.answered', 'desc'),
-            'latest' => $questions->orderBy('questions.created_at', 'desc'),
-            'oldest' => $questions->orderBy('questions.created_at'),
-        };
-
-        if($request['search']) {
-            $keywords = explode(' ', $request['search']);
-            $questions =  $questions->where(function ($query) use ($keywords) {
-                foreach ($keywords as $keyword) {
-                    $query->where('questions.content', 'LIKE', '%' . $keyword . '%');
-                }
-            });
-        }
-
-        $questions = $questions->get();
-
-        foreach ($questions as $question) {
-            if($question['questions.user_id'] == Auth::id()) {
-                $question['my_question'] = 1;
-            } else {
-                $question['my_question'] = 0;
-            }
-        }
+            'my_like')
+            ->when($request['order_by'], function ($query) use ($request) {
+                $query = match ($request['order_by']) {
+                    'popular' => $query->orderBy('likes_count', 'desc')->orderBy('answers_count','desc')->orderBy('questions.answered', 'desc'),
+                    'latest' => $query->orderBy('questions.created_at', 'desc'),
+                    'oldest' => $query->orderBy('questions.created_at'),
+                };
+            })->paginate(4);
+        
+        $questions->getCollection()->transform(function ($question) {
+            $question->my_question = ($question['user_id'] == Auth::id()) ? 1 : 0;
+            
+            return $question;
+        });
 
         $message = 'success';
         $code = 200;
@@ -125,6 +109,23 @@ class QuestionService
 
     public function show($request) {
         $question = Question::query()->select(
+            'questions.*',
+            'users.name as user_name',
+            'my_likes.id as my_like',
+            DB::raw('COUNT(DISTINCT likes.id) as likes_count'),
+            DB::raw('COUNT(DISTINCT answers.id) as answers_count'))
+            ->join('users', 'users.id', '=', 'questions.user_id')
+            ->leftJoin('likes', function ($join) {
+                $join->on('likes.likeable_id', '=', 'questions.id')
+                    ->where('likes.likeable_type', '=', 'question');
+            })
+            ->leftJoin('answers', 'answers.question_id', '=', 'questions.id')
+            ->leftJoin('likes as my_likes', function ($join) {
+                $join->on('my_likes.likeable_id', '=', 'questions.id')
+                    ->where('my_likes.likeable_type', '=', 'question')
+                    ->where('my_likes.user_id', '=', Auth::id());
+            })
+            ->groupBy(
             'questions.id',
             'questions.user_id',
             'questions.category_id',
@@ -132,43 +133,9 @@ class QuestionService
             'questions.answered',
             'questions.created_at',
             'questions.updated_at',
-            'users.name as user_name',
-            'categories.name as category_name',
-            'best_answers.id as best_answer_id',
-            'best_answers.content as best_answer_content',
-            'my_likes.id as my_like',
-            DB::raw('COUNT(DISTINCT likes.id) as likes_count'),
-            DB::raw('COUNT(DISTINCT answers.id) as answers_count'))
-            ->join('users', 'users.id', '=', 'questions.user_id')
-            ->join('categories', 'categories.id', '=', 'questions.category_id')
-            ->leftJoin('likes', function ($join) {
-                $join->on('likes.likeable_id', '=', 'questions.id')
-                    ->where('likes.likeable_type', '=', 'question');
-            })
-            ->leftJoin('answers', 'answers.question_id', '=', 'questions.id')
-            ->leftJoin('answers as best_answers', function ($join) {
-                $join->on('best_answers.question_id', '=', 'questions.id')
-                    ->where('best_answers.best', '=', true);
-            })
-            ->leftJoin('likes as my_likes', function ($join) {
-                $join->on('my_likes.likeable_id', '=', 'questions.id')
-                    ->where('my_likes.likeable_type', '=', 'question')
-                    ->where('my_likes.user_id', '=', Auth::id());
-            })
-            ->groupBy(
-                'questions.id',
-                'questions.user_id',
-                'questions.category_id',
-                'questions.content',
-                'questions.answered',
-                'questions.created_at',
-                'questions.updated_at',
-                'user_name',
-                'category_name',
-                'best_answer_id',
-                'best_answer_content',
-                'my_like',
-            )->find($request['question_id']);
+            'user_name',
+            'my_like')
+            ->find($request['question_id']);
 
 
         $code = 200;

@@ -82,17 +82,16 @@
                             @endif
                         <!-- User Links -->
                         @else
-                            <!-- User profile -->
-                            <li class="nav-item">
-                                <a class="nav-link p-2" href="" onclick="event.preventDefault(); document.getElementById('profile-form').submit();">{{ __('Profile') }}</a>
-                                <form id="profile-form" action="" method="Get" class="d-none"></form>
-                            </li>
                             <!-- Logout -->
                             <li class="nav-item">
                                 <a class="nav-link p-2" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                     @csrf
                                 </form>
+                            </li>
+                            <!-- User profile --> 
+                            <li class="nav-item">
+                                <div class="m-2">{{Auth::user()->name}}</div>
                             </li>
                         @endguest
                     </ul>
