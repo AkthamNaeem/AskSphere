@@ -630,9 +630,6 @@
                     });
                 });
 
-
-                fetchQuestions
-
                 //bring questions according to the specified data
                 function fetchQuestions() {
                     let dataToSend = {
@@ -692,8 +689,9 @@
                     </div>` : ``}
                 </div>
             </div>
-            ${question.answered ? `<span class="badge badge-info mt-0 mb-3">Answered</span>` : ``}
+            
             <p class="card-text mb-3" style="font-size: 1.2rem; color: #343a40;">
+            ${question.answered ? `<p class="p-2 pt-0 pb-0" style="display: inline-block; background-color: dodgerblue; color: aliceblue; border-radius: 10px;">Answered</p>` : ``}
                 ${question.content}
             </p>
             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -760,8 +758,8 @@
                     </div>` : ``}
                 </div>
             </div>
-            ${answer.best ? `<span class="badge badge-success mb-3">Best Answer</span>` : ``}
             <p class="card-text mb-3" style="font-size: 1.1rem; color: #343a40;">
+                ${answer.best ? `<p class="p-2 pt-0 pb-0" style="display: inline-block; background-color: green; color: aliceblue; border-radius: 10px;">Best Answer</p>` : ``}
                 ${answer.content}
             </p>
             <div class="d-flex justify-content-between align-items-center mb-2">

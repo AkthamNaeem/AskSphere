@@ -194,9 +194,45 @@ class AnswerService
                 $question->update([
                     'answered' => true
                 ]);
+                $answer = Answer::query()->select(
+                    'answers.id',
+                    'answers.user_id',
+                    'answers.question_id',
+                    'answers.content',
+                    'answers.best',
+                    'answers.created_at',
+                    'questions.user_id as questioner_id',
+                    'questions.answered as question_answered',
+                    'users.name as user_name',
+                    'my_likes.id as my_like',
+                    DB::raw('COUNT(DISTINCT likes.id) as likes_count'))
+                    ->join('questions', 'questions.id', '=', 'answers.question_id')
+                    ->join('users', 'users.id', '=', 'answers.user_id')
+                    ->leftJoin('likes as my_likes', function ($join) {
+                        $join->on('my_likes.likeable_id', '=', 'answers.id')
+                            ->where('my_likes.likeable_type', '=', 'answer')
+                            ->where('my_likes.user_id', '=', Auth::id());
+                    })
+                    ->leftJoin('likes', function ($join) {
+                        $join->on('likes.likeable_id', '=', 'answers.id')
+                            ->where('likes.likeable_type', '=', 'answer');})
+                    ->groupBy(
+                        'answers.id',
+                        'answers.user_id',
+                        'answers.question_id',
+                        'answers.content',
+                        'answers.best',
+                        'answers.created_at',
+                        'my_like',
+                        'questioner_id',
+                        'question_answered',
+                        'user_name',
+                    )->find($request['answer_id']);
+                $code = 200;
+                $message = 'success';
             } else {
                 $code = 400;
-            $message = 'error';
+                $message = 'error';
             }
         } else {
             $code = 400;
